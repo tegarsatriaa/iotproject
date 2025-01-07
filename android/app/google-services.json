@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "154768656057",
+    "firebase_url": "https://iotproject-cb7b7-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "iotproject-cb7b7",
+    "storage_bucket": "iotproject-cb7b7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:154768656057:android:dd0cc9c18958dbc1e37d68",
+        "android_client_info": {
+          "package_name": "com.example.iotproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-D8FqxWYqw33tbG8WXTKwV-sFjZaLaIs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
