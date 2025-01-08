@@ -1,7 +1,9 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iotproject/profile_page.dart';
 import 'package:iotproject/util/smart_devices_box.dart';
+import 'DarkModeSettingsPage.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,9 +16,7 @@ class _HomePageState extends State<HomePage> {
   final double horizontalPadding = 40;
   final double verticalPadding = 25;
 
-  // List smart devices
   List mySmartDevices = [
-    // [ smartDeviceName, iconPath, powerStatus]
     ["Lampu", "lib/images/light.png", true],
     ["AC", "lib/images/air-conditioner.png", false],
     ["Kipas", "lib/images/fan.png", false],
@@ -24,7 +24,8 @@ class _HomePageState extends State<HomePage> {
   ];
 
   final databaseReference = FirebaseDatabase.instance.ref();
-  bool lampuStatus = false; // Status lampu dari Firebase
+  bool lampuStatus = false;
+  bool isDarkMode = false;
 
   @override
   void initState() {
@@ -32,7 +33,6 @@ class _HomePageState extends State<HomePage> {
     _fetchLampuStatus();
   }
 
-  // Fetch lampu status from Firebase
   void _fetchLampuStatus() {
     databaseReference.child('devices/Lampu/status').onValue.listen((event) {
       final bool status = event.snapshot.value as bool;
@@ -55,12 +55,12 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: isDarkMode ? Colors.black : Colors.grey[300],
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Custom app bar
+            // App bar
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: horizontalPadding,
@@ -69,23 +69,50 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Menu icon
-                  Image.asset(
-                    'lib/images/app.png',
-                    height: 45,
-                    color: Colors.grey[800],
+                  // Menu icon with navigation to DarkModeSettingsPage
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DarkModeSettingsPage(
+                            isDarkMode: isDarkMode,
+                            onDarkModeChanged: (value) {
+                              setState(() {
+                                isDarkMode = value;
+                              });
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    child: Image.asset(
+                      'lib/images/app.png',
+                      height: 45,
+                      color: isDarkMode ? Colors.white : Colors.grey[800],
+                    ),
                   ),
-                  // Account icon
-                  Icon(
-                    Icons.person,
-                    size: 45,
-                    color: Colors.grey[800],
+                  GestureDetector(
+                    onTap: () {
+                      // Navigasi ke halaman profil dengan membawa informasi dark mode
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfilePage(isDarkMode: isDarkMode),  // Pass dark mode state
+                        ),
+                      );
+                    },
+                    child: Icon(
+                      Icons.person,
+                      size: 45,
+                      color: isDarkMode ? Colors.white : Colors.grey[800],
+                    ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-            // Welcome home with Lampu status
+            // Teks selamat datang dan status Lampu
             Padding(
               padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
               child: Row(
@@ -95,18 +122,21 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Selamat Datang,",
-                        style: TextStyle(fontSize: 20, color: Colors.grey[700]),
+                        "Proyek Praktikum :",
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: isDarkMode ? Colors.white : Colors.grey[700],
+                        ),
                       ),
                       Text(
-                        "RAGET",
+                        "MCS",
                         style: GoogleFonts.bebasNeue(
                           fontSize: 72,
+                          color: isDarkMode ? Colors.white : Colors.black,
                         ),
                       ),
                     ],
                   ),
-                  // Lampu status
                   Column(
                     children: [
                       Text(
@@ -114,14 +144,16 @@ class _HomePageState extends State<HomePage> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey[800],
+                          color: isDarkMode ? Colors.white : Colors.grey[800],
                         ),
                       ),
                       Text(
                         lampuStatus ? "Hidup" : "Mati",
                         style: TextStyle(
                           fontSize: 18,
-                          color: lampuStatus ? Colors.green : Colors.red,
+                          color: lampuStatus
+                              ? (isDarkMode ? Colors.lightGreen : Colors.green)
+                              : (isDarkMode ? Colors.red[300] : Colors.red),
                         ),
                       ),
                     ],
@@ -133,12 +165,11 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: Divider(
-                color: Colors.grey[800],
+                color: isDarkMode ? Colors.grey[700] : Colors.grey[800],
                 thickness: 1,
               ),
             ),
             const SizedBox(height: 25),
-            // Smart devices
             Padding(
               padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
               child: Text(
@@ -146,7 +177,7 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
-                  color: Colors.grey[800],
+                  color: isDarkMode ? Colors.white : Colors.grey[800],
                 ),
               ),
             ),
